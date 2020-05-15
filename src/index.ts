@@ -61,6 +61,10 @@ export default class Highlighter extends EventEmitter {
         }
     });
 
+    public highlightSelection = () => {
+        return this._handleSelection();
+    }
+
     private _highlighFromHRange = (range: HighlightRange): HighlightSource => {
         const source: HighlightSource = range.serialize(this.options.$root, this.hooks);
         const $wraps = this.painter.highlightRange(range);
