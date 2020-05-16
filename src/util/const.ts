@@ -21,7 +21,7 @@ export const DEFAULT_OPTIONS = {
     exceptSelectors: null,
     wrapTag: DEFAULT_WRAP_TAG,
     style: {
-        className: 'highlight-mengshou-wrap'
+        className: 'breeze-annotation'
     }
 };
 

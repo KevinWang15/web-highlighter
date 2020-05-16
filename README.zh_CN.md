@@ -130,7 +130,7 @@ web-highlighter 会通过 [`Selection API`](https://caniuse.com/#search=selectio
     exceptSelectors: null,
     wrapTag: 'span',
     style: {
-        className: 'highlight-mengshou-wrap'
+        className: 'breeze-annotation'
     }
 }
 ```
@@ -148,7 +148,7 @@ web-highlighter 会通过 [`Selection API`](https://caniuse.com/#search=selectio
 
 | 参数名 | 类型 | 描述 | 是否必须 | 默认值 |
 |---|---|---|---|---|
-| className | `string` | 高亮包裹元素的 className | 否 | `highlight-mengshou-wrap` |
+| className | `string` | 高亮包裹元素的 className | 否 | `breeze-annotation` |
 
 `exceptSelectors` 为 `null` 或 `Array<string>`。 支持 ID 选择器、类选择器和标签选择器。例如，想要忽略标签为 h1 和 classname 为 `.title` 的元素：
 

@@ -144,7 +144,7 @@ document.addEventListener('mouseover', e => {
         highlighter.removeClass('highlight-wrap-hover');
         highlighter.addClass('highlight-wrap-hover', hoveredTipId);
     }
-    else if (!$ele.classList.contains('my-remove-tip') && !$ele.classList.contains('highlight-mengshou-wrap')) {
+    else if (!$ele.classList.contains('my-remove-tip') && !$ele.classList.contains('breeze-annotation')) {
         highlighter.removeClass('highlight-wrap-hover', hoveredTipId);
         hoveredTipId = null;
     }
