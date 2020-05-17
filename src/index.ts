@@ -132,6 +132,10 @@ export default class Highlighter extends EventEmitter {
         ? getHighlightById(this.options.$root, id, this.options.wrapTag)
         : getHighlightsByRoot(this.options.$root, this.options.wrapTag);
 
+    getSourceById(id) {
+        return this.cache.get(id);
+    }
+
     dispose = () => {
         const $root = this.options.$root;
         removeEventListener($root, event.PointerOver, this._handleHighlightHover);
