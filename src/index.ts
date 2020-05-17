@@ -67,6 +67,7 @@ export default class Highlighter extends EventEmitter {
 
     private _highlighFromHRange = (range: HighlightRange, extra?: any): HighlightSource => {
         const source: HighlightSource = range.serialize(this.options.$root, this.hooks);
+        source.extra = extra;
         const $wraps = this.painter.highlightRange(range, extra);
         if ($wraps.length === 0) {
             console.warn(ERROR.DOM_SELECTION_EMPTY);
@@ -77,8 +78,9 @@ export default class Highlighter extends EventEmitter {
         return source;
     }
 
-    private _highlighFromHSource(sources: HighlightSource[] | HighlightSource = []) {
-        const renderedSources: Array<HighlightSource> = this.painter.highlightSource(sources);;
+    private _highlighFromHSource(sources: HighlightSource[] | HighlightSource = [], extra) {
+        const renderedSources: Array<HighlightSource> = this.painter.highlightSource(sources);
+        renderedSources.forEach(source => source.extra = extra);
         this.emit(EventType.CREATE, {sources: renderedSources, type: 'from-store'}, this);
         this.cache.save(sources);
     }
@@ -178,10 +180,10 @@ export default class Highlighter extends EventEmitter {
         return this._highlighFromHRange(hRange);
     }
 
-    fromStore = (start: DomMeta, end: DomMeta, text, id, color): HighlightSource => {
+    fromStore = (start: DomMeta, end: DomMeta, text, id, extra): HighlightSource => {
         try {
-            const hs = new HighlightSource(start, end, text, id, {color});
-            this._highlighFromHSource(hs);
+            const hs = new HighlightSource(start, end, text, id, extra);
+            this._highlighFromHSource(hs, extra);
             return hs;
         } catch (err) {
             console.error(err, id, text, start, end);
