@@ -61,13 +61,13 @@ export default class Highlighter extends EventEmitter {
         }
     });
 
-    public highlightSelection = () => {
-        return this._handleSelection();
+    public highlightSelection = (color) => {
+        return this._handleSelection(null, {color});
     }
 
-    private _highlighFromHRange = (range: HighlightRange): HighlightSource => {
+    private _highlighFromHRange = (range: HighlightRange, extra?: any): HighlightSource => {
         const source: HighlightSource = range.serialize(this.options.$root, this.hooks);
-        const $wraps = this.painter.highlightRange(range);
+        const $wraps = this.painter.highlightRange(range, extra);
         if ($wraps.length === 0) {
             console.warn(ERROR.DOM_SELECTION_EMPTY);
             return null;
@@ -83,10 +83,10 @@ export default class Highlighter extends EventEmitter {
         this.cache.save(sources);
     }
 
-    private _handleSelection = (e?: Event) => {
+    private _handleSelection = (e?: Event, extra?: any) => {
         const range = HighlightRange.fromSelection(this.hooks.Render.UUID);
         if (range) {
-            this._highlighFromHRange(range);
+            this._highlighFromHRange(range, extra);
             HighlightRange.removeDomRange();
         }
     }
@@ -174,13 +174,12 @@ export default class Highlighter extends EventEmitter {
         return this._highlighFromHRange(hRange);
     }
 
-    fromStore = (start: DomMeta, end: DomMeta, text, id): HighlightSource => {
+    fromStore = (start: DomMeta, end: DomMeta, text, id, color): HighlightSource => {
         try {
-            const hs = new HighlightSource(start, end, text, id);
+            const hs = new HighlightSource(start, end, text, id, {color});
             this._highlighFromHSource(hs);
             return hs;
-        }
-        catch (err) {
+        } catch (err) {
             console.error(err, id, text, start, end);
             return null;
         }

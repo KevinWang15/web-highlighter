@@ -36,7 +36,7 @@ export default class Painter {
     }
 
     /* =========================== render =========================== */
-    highlightRange(range: HighlightRange): Array<HTMLElement> {
+    highlightRange(range: HighlightRange, extra?: any): Array<HTMLElement> {
         if (!range.frozen) {
             throw ERROR.HIGHLIGHT_RANGE_FROZEN;
         }
@@ -50,7 +50,7 @@ export default class Painter {
         }
 
         return $selectedNodes.map(n => {
-            let $node = wrapHighlight(n, range, className, this.options.wrapTag);
+            let $node = wrapHighlight(n, range, className, this.options.wrapTag, extra);
             if (!hooks.Render.WrapNode.isEmpty()) {
                 $node = hooks.Render.WrapNode.call(range.id, $node);
             }
@@ -70,7 +70,7 @@ export default class Painter {
                 return;
             }
             const range = s.deSerialize(this.options.$root);
-            const $nodes = this.highlightRange(range);
+            const $nodes = this.highlightRange(range, s.extra);
             if ($nodes.length > 0) {
                 renderedSources.push(s);
             }

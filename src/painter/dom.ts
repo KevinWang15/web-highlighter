@@ -12,7 +12,8 @@ import {
     CAMEL_DATASET_IDENTIFIER_EXTRA,
     DATASET_IDENTIFIER,
     DATASET_SPLIT_TYPE,
-    DATASET_IDENTIFIER_EXTRA
+    DATASET_IDENTIFIER_EXTRA,
+    DATASET_HIGHLIGHT_COLOR
 } from '../util/const';
 
 /**
@@ -148,10 +149,11 @@ export const getSelectedNodes = (
     return selectedNodes;
 };
 
-function addClass($el: HTMLElement, className?: string | Array<string>): HTMLElement  {
+function addClass($el: HTMLElement, className?: string | Array<string>, extra?: any): HTMLElement {
     let classNames = Array.isArray(className) ? className : [className];
     classNames = classNames.length === 0 ? [DEFAULT_OPTIONS.style.className] : classNames;
     classNames.forEach(c => addElementClass($el, c));
+    $el.style.backgroundColor = extra.color;
     return $el;
 }
 
@@ -162,16 +164,18 @@ function wrapNewNode(
     selected: SelectedNode,
     range: HighlightRange,
     className: string | Array<string>,
-    wrapTag: string
+    wrapTag: string,
+    extra?: any
 ): HTMLElement {
     let $wrap: HTMLElement;
     $wrap = document.createElement(wrapTag);
-    addClass($wrap, className);
+    addClass($wrap, className, extra);
 
     $wrap.appendChild(selected.$node.cloneNode(false));
     selected.$node.parentNode.replaceChild($wrap, selected.$node);
 
     $wrap.setAttribute(`data-${DATASET_IDENTIFIER}`, range.id);
+    $wrap.setAttribute(`data-${DATASET_HIGHLIGHT_COLOR}`, extra.color);
     $wrap.setAttribute(`data-${DATASET_SPLIT_TYPE}`, selected.splitType);
     $wrap.setAttribute(`data-${DATASET_IDENTIFIER_EXTRA}`, '');
 
@@ -185,7 +189,8 @@ function wrapPartialNode(
     selected: SelectedNode,
     range: HighlightRange,
     className: string | Array<string>,
-    wrapTag: string
+    wrapTag: string,
+    extra?: any
 ): HTMLElement {
     let $wrap: HTMLElement = document.createElement(wrapTag);
 
@@ -198,6 +203,7 @@ function wrapPartialNode(
     const extraInfo = parentExtraId ? parentId + ID_DIVISION + parentExtraId : parentId;
 
     $wrap.setAttribute(`data-${DATASET_IDENTIFIER}`, range.id);
+    $wrap.setAttribute(`data-${DATASET_HIGHLIGHT_COLOR}`, extra.color);
     $wrap.setAttribute(`data-${DATASET_IDENTIFIER_EXTRA}`, extraInfo);
     $wrap.appendChild(selected.$node.cloneNode(false));
 
@@ -212,7 +218,7 @@ function wrapPartialNode(
         headSplit = true;
     }
 
-    addClass($wrap, className);
+    addClass($wrap, className, extra);
     $fr.appendChild($wrap);
 
     if ($next) {
@@ -247,12 +253,13 @@ function wrapPartialNode(
 function wrapOverlapNode(
     selected: SelectedNode,
     range: HighlightRange,
-    className: string | Array<string>
+    className: string | Array<string>,
+    extra?: any
 ): HTMLElement {
     const $parent = selected.$node.parentNode as HTMLElement;
     let $wrap: HTMLElement = $parent;
 
-    addClass($wrap, className);
+    addClass($wrap, className, extra);
 
     const dataset = $parent.dataset;
     const formerId = dataset[CAMEL_DATASET_IDENTIFIER];
@@ -278,7 +285,8 @@ export const wrapHighlight = (
     selected: SelectedNode,
     range: HighlightRange,
     className: string | Array<string>,
-    wrapTag: string
+    wrapTag: string,
+    extra?: any
 ): HTMLElement => {
     const $parent = selected.$node.parentNode as HTMLElement;
     const $prev = selected.$node.previousSibling;
@@ -287,15 +295,15 @@ export const wrapHighlight = (
     let $wrap: HTMLElement;
     // text node, not in a highlight wrapper -> should be wrapped in a highlight wrapper
     if (!isHighlightWrapNode($parent)) {
-        $wrap = wrapNewNode(selected, range, className, wrapTag);
+        $wrap = wrapNewNode(selected, range, className, wrapTag, extra);
     }
     // text node, in a highlight wrap -> should split the existing highlight wrapper
     else if (isHighlightWrapNode($parent) && ($prev || $next)) {
-        $wrap = wrapPartialNode(selected, range, className, wrapTag);
+        $wrap = wrapPartialNode(selected, range, className, wrapTag, extra);
     }
     // completely overlap (with a highlight wrap) -> only add extra id info
     else {
-        $wrap = wrapOverlapNode(selected, range, className);
+        $wrap = wrapOverlapNode(selected, range, className, extra);
     }
     return $wrap;
 };
